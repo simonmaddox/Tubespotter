@@ -1,0 +1,101 @@
+<html>
+<head>
+<style>
+body {
+	min-width:200px;
+}
+</style>
+
+<script>
+function YT2Spotify(){
+	var req;
+	var artist;
+	var track;
+	var artistURL;
+	var trackURL;
+	
+	message("Finding track on Spotify...");
+	chrome.windows.getCurrent(function(currentWindow) {
+		id = currentWindow.id;
+		chrome.tabs.getSelected(id, function (currentTab){
+			segments = currentTab.url.split(".",2);
+			if (segments[0] == "youtube" || segments[1] == "youtube"){
+				fetchHTML(currentTab.url, YouTubeLoaded);
+			} else {
+				message("This isn't YouTube!");
+			}
+		});
+	} );
+	
+	function message(message){
+		document.body.innerHTML = message;
+	}
+
+	function fetchHTML(url, method){
+		req = null;
+		req = new XMLHttpRequest();
+		req.open("GET", url,true);
+		req.onload = method;
+		req.send(null);
+	}
+
+
+	function YouTubeLoaded() {
+
+		div=document.createElement('div');
+		div.innerHTML=req.responseText;
+		
+		var spans = div.getElementsByTagName("span");
+			
+		for (var i = 0, span; span = spans[i]; i++) {
+			if (span.getAttribute("class") == "watch-extra-info-left"){
+				artist = span.getElementsByTagName("a")[0].getElementsByTagName("strong")[0].innerHTML;
+				track = span.innerHTML.split("-", 2)[1];
+				break;
+			}
+		}
+		
+		if (artist != null && track != null){
+			fetchHTML("http://ws.spotify.com/search/1/artist?q=" + encodeURIComponent(artist), ArtistLoaded);
+		} else {
+			message("Failed to find track details on YouTube");
+		}
+	}
+	
+	function ArtistLoaded() {
+		div=document.createElement('div');
+		div.innerHTML=req.responseText;
+		var artists = div.getElementsByTagName("artist");
+		artistURL = artists[0].getAttribute("href");
+				
+		if (artistURL.length > 0){
+			fetchHTML("http://ws.spotify.com/search/1/track?q=" + encodeURIComponent(track), TrackLoaded);
+		} else {
+			message("Failed to find artist on Spotify");
+		}
+	}
+		
+	function TrackLoaded() {
+		div=document.createElement('div');
+		div.innerHTML=req.responseText;
+		var tracks = div.getElementsByTagName("track");
+		
+		for (var i = 0, track; track = tracks[i]; i++) {
+			if (track.getElementsByTagName("artist")[0].getAttribute("href") == artistURL){
+				trackURL = track.getAttribute("href");
+			}
+		}
+		
+		if (trackURL.length > 0){
+			popup = window.open(trackURL);
+			popup.close();
+		} else {
+			message("Failed to find track on Spotify");
+		}
+	}
+}
+</script>
+</head>
+<body onLoad="javascript:YT2Spotify();">
+</body>
+</html>
