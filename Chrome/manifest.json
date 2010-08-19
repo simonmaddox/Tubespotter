@@ -10,7 +10,7 @@
   "options_page": "settings.html",
   "browser_action": {
     "default_icon": "icon19.png",
-	"popup": "popup.html"
+	"popup": "tubespotter.html"
   },
   "permissions": [
 	"tabs",

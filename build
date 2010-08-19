@@ -1,0 +1,16 @@
+#!/usr/bin/php
+<?php
+
+if (!empty($argc) && $argc == 2 && strstr($argv[0], basename(__FILE__))) {
+	if ($argv[1] == "chrome"){
+		system("zip -j -D -q Tubespotter.zip tubespotter.html icon19.png Chrome/*");
+		echo "Tubespotter.zip";
+	} else if ($argv[1] == "safari"){
+		
+		echo "Done";
+	}
+} else {
+	echo 'Usage: ./build [chrome|safari]';
+}
+
+echo "\n";

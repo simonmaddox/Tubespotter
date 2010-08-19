@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Author</key>
+	<string>Simon Maddox</string>
+	<key>CFBundleDisplayName</key>
+	<string>Tubespotter</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.simonmaddox.tubespotter</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>Chrome</key>
+	<dict>
+		<key>Global Page</key>
+		<string>tubespotter.html</string>
+		<key>Toolbar Items</key>
+		<array>
+			<dict>
+				<key>Command</key>
+				<string>Tubespotter</string>
+				<key>Identifier</key>
+				<string>tubespotter</string>
+				<key>Image</key>
+				<string>icon19.png</string>
+				<key>Label</key>
+				<string>Tubespotter</string>
+			</dict>
+		</array>
+	</dict>
+	<key>Content</key>
+	<dict>
+		<key>Scripts</key>
+		<dict/>
+	</dict>
+	<key>Description</key>
+	<string>Turn a YouTube video into a Spotify track with one click!</string>
+	<key>ExtensionInfoDictionaryVersion</key>
+	<string>1.0</string>
+	<key>Permissions</key>
+	<dict>
+		<key>Website Access</key>
+		<dict>
+			<key>Allowed Domains</key>
+			<array>
+				<string>*.youtube.com</string>
+				<string>ws.spotify.com</string>
+				<string>ax.phobos.apple.com.edgesuite.net</string>
+			</array>
+			<key>Level</key>
+			<string>Some</string>
+		</dict>
+	</dict>
+	<key>Website</key>
+	<string>http://simonmaddox.com</string>
+</dict>
+</plist>
