@@ -7,25 +7,51 @@ body {
 </style>
 
 <script>
-function YT2Spotify(){
+
+function init(){
+	if (typeof chrome !== 'undefined'){
+		// chrome
+		chrome.windows.getCurrent(function(currentWindow) {
+			thisWindow = currentWindow.id;
+			chrome.tabs.getSelected(thisWindow, function (currentTab){
+				Tubespotter(currentTab.url);
+			});
+		});
+	} else if (typeof safari !== 'undefined'){
+		safari.application.addEventListener("command", Tubespotter, false);
+	}
+}
+
+function Tubespotter(url){
 	var req;
+	var YouTubeURL;
 	var artist;
 	var track;
 	var artistURL;
 	var trackURL;
+	var thisWindow;
+	var tab;
+	var player = localStorage["player"];
 	
-	message("Finding track on Spotify...");
-	chrome.windows.getCurrent(function(currentWindow) {
-		id = currentWindow.id;
-		chrome.tabs.getSelected(id, function (currentTab){
-			segments = currentTab.url.split(".",2);
-			if (segments[0] == "youtube" || segments[1] == "youtube"){
-				fetchHTML(currentTab.url, YouTubeLoaded);
-			} else {
-				message("This isn't YouTube!");
-			}
-		});
-	} );
+	if (player == null){
+		player = "Spotify";
+	}
+	
+	YouTubeURL = url;
+	
+	message("Finding track on "+player+"...");
+	
+	if (typeof safari !== 'undefined'){
+		YouTubeURL = safari.application.activeBrowserWindow.activeTab.url;
+	}
+	
+	segments = YouTubeURL.split(".",2);
+		
+	if (segments[0] == "youtube" || segments[1] == "youtube"){
+		fetchHTML(YouTubeURL, YouTubeLoaded);
+	} else {
+		message("This isn't YouTube!");
+	}
 	
 	function message(message){
 		document.body.innerHTML = message;
@@ -39,6 +65,23 @@ function YT2Spotify(){
 		req.send(null);
 	}
 
+	function open(theURL)
+	{
+		console.log("Opening " + theURL);
+		if (typeof chrome !== 'undefined'){
+			chrome.tabs.create({url: theURL,windowId: thisWindow}, function (newTab){
+				if (player == "Spotify"){
+					setTimeout ('chrome.tabs.remove(newTab.id)', 500);
+				}
+			});
+		} else if (typeof safari !== 'undefined'){
+			var newTab = safari.application.activeBrowserWindow.openTab();
+			newTab.url = theURL;
+			if (player == "Spotify"){
+				setTimeout ('newTab.close();', 500);
+			}
+		}
+	}
 
 	function YouTubeLoaded() {
 
@@ -56,26 +99,30 @@ function YT2Spotify(){
 		}
 		
 		if (artist != null && track != null){
-			fetchHTML("http://ws.spotify.com/search/1/artist?q=" + encodeURIComponent(artist), ArtistLoaded);
+			if (player == "Spotify"){
+				fetchHTML("http://ws.spotify.com/search/1/artist?q=" + encodeURIComponent(artist), SpotifyArtistLoaded);
+			} else if (player == "iTunes") {
+	fetchHTML("http://ax.phobos.apple.com.edgesuite.net/WebObjects/MZStoreServices.woa/wa/wsSearch?term="+encodeURI(artist)+"+-+"+encodeURI(track)+"&media=music&entity=musicTrack&limit=1", gotiTunes);
+			}
 		} else {
 			message("Failed to find track details on YouTube");
 		}
 	}
 	
-	function ArtistLoaded() {
+	function SpotifyArtistLoaded() {
 		div=document.createElement('div');
 		div.innerHTML=req.responseText;
 		var artists = div.getElementsByTagName("artist");
 		artistURL = artists[0].getAttribute("href");
 				
 		if (artistURL.length > 0){
-			fetchHTML("http://ws.spotify.com/search/1/track?q=" + encodeURIComponent(track), TrackLoaded);
+			fetchHTML("http://ws.spotify.com/search/1/track?q=" + encodeURIComponent(track), SpotifyTrackLoaded);
 		} else {
-			message("Failed to find artist on Spotify");
+			message("Failed to find artist on " + player);
 		}
 	}
 		
-	function TrackLoaded() {
+	function SpotifyTrackLoaded() {
 		div=document.createElement('div');
 		div.innerHTML=req.responseText;
 		var tracks = div.getElementsByTagName("track");
@@ -87,15 +134,24 @@ function YT2Spotify(){
 		}
 		
 		if (trackURL.length > 0){
-			popup = window.open(trackURL);
-			popup.close();
+			open(trackURL);
 		} else {
-			message("Failed to find track on Spotify");
+			message("Failed to find track on " + player);
+		}
+	}
+	
+	function gotiTunes()
+	{
+		var response = JSON.parse(req.responseText);
+		if (response["results"][0]["trackViewUrl"] != null){
+			open(response["results"][0]["trackViewUrl"]);
+		} else {
+			message("Failed to find track on " + player);
 		}
 	}
 }
 </script>
 </head>
-<body onLoad="javascript:YT2Spotify();">
+<body onLoad="javascript:init();">
 </body>
 </html>

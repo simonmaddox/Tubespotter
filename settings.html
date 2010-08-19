@@ -1,0 +1,49 @@
+<html>
+<head><title>Tubespotter Options</title></head>
+<script type="text/javascript">
+
+// Saves options to localStorage.
+function save_options() {
+  var select = document.getElementById("player");
+  var player = select.children[select.selectedIndex].value;
+  localStorage["player"] = player;
+
+  // Update status to let user know options were saved.
+  var status = document.getElementById("status");
+  status.innerHTML = "Options Saved.";
+  setTimeout(function() {
+    status.innerHTML = "";
+  }, 750);
+}
+
+// Restores select box state to saved value from localStorage.
+function restore_options() {
+  var player = localStorage["player"];
+  if (!player) {
+    return;
+  }
+  var select = document.getElementById("player");
+
+  for (var i = 0; i < select.children.length; i++) {
+    var child = select.children[i];
+    if (child.value == favorite) {
+      child.selected = "true";
+      break;
+    }
+  }
+}
+
+</script>
+
+<body onload="restore_options()">
+
+Select Player:
+<select id="player">
+ <option value="Spotify">Spotify</option>
+ <option value="iTunes">iTunes</option>
+</select>
+
+<br>
+<button onclick="save_options()">Save</button>
+</body>
+</html>
