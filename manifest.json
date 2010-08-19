@@ -3,13 +3,13 @@
   "version": "1.0",
   "description": "Turn a YouTube video into a Spotify track with one click!",
   "icons": {
-    "16": "icon16.png",
-	"48": "icon48.png",
-	"128": "icon128.png"
+    "16": "Chrome/icon16.png",
+	"48": "Chrome/icon48.png",
+	"128": "Chrome/icon128.png"
   },
-  "options_page": "settings.html",
+  "options_page": "Chrome/settings.html",
   "browser_action": {
-    "default_icon": "icon19.png",
+    "default_icon": "Chrome/icon19.png",
 	"popup": "tubespotter.html"
   },
   "permissions": [

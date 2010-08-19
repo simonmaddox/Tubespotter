@@ -3,10 +3,10 @@
 
 if (!empty($argc) && $argc == 2 && strstr($argv[0], basename(__FILE__))) {
 	if ($argv[1] == "chrome"){
-		system("zip -j -D -q Tubespotter.zip tubespotter.html icon19.png Chrome/*");
+		system("zip -q Tubespotter.zip tubespotter.html icon19.png manifest.json Chrome/*");
 		echo "Tubespotter.zip";
 	} else if ($argv[1] == "safari"){
-		
+		system("cp tubespotter.html Tubespotter.safariextension/");
 		echo "Done";
 	}
 } else {
